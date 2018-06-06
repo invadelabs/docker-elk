@@ -1,0 +1,44 @@
+input {
+  tcp {
+    port => 5000
+    type => old_rsyslog
+  }
+  tcp {
+    port => 10514
+    codec => "json"
+    type => "rsyslog"
+  }
+}
+
+filter {
+ if [type] == "old_rsyslog" {
+   grok {
+     match => { "message" => "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:sysloghost} %{DATA:programname}(?:\[%{POSINT:procid}\])?: %{GREEDYDATA:syslog_message}" }
+     add_field => [ "received_at", "%{@timestamp}" ]
+     add_field => [ "received_from", "%{host}" ]
+   }
+   date {
+     match => [ "syslog_timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
+     remove_field => syslog_timestamp
+   }
+   mutate {
+     rename => [ "syslog_message", "message" ]
+   }
+ }
+}
+
+output {
+  if [type] == [ "rsyslog", "old_rsyslog ] {
+    elasticsearch {
+      hosts => "elasticsearch:9200"
+      index => "rsyslog-%{+YYYY.MM.dd}"
+    }
+    #stdout { codec => rubydebug }
+  }
+  else {
+    elasticsearch {
+      hosts => "elasticsearch:9200"
+    }
+    #stdout { codec => rubydebug }
+  }
+}
