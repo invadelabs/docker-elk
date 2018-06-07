@@ -8,6 +8,7 @@ services:
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ./data:/usr/share/elasticsearch/data
+      - /mnt/share/bkup/docker-elk:/backup
     ports:
       - "9200:9200"
       - "9300:9300"
