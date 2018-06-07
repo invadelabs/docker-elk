@@ -14,6 +14,10 @@ services:
       - type: volume
         source: elasticsearch
         target: /usr/share/elasticsearch/data
+      - type: bind
+        source: /mnt/share/bkup/docker-elk
+        target: /backup
+        read_only: false
     ports:
       - "9200:9200"
       - "9300:9300"
