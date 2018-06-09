@@ -17,6 +17,10 @@ services:
     networks:
       - elk
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
 
   logstash:
     build:
@@ -34,6 +38,10 @@ services:
     depends_on:
       - elasticsearch
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
 
   kibana:
     build:
@@ -47,6 +55,10 @@ services:
     depends_on:
       - elasticsearch
     restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
 
 networks:
 
