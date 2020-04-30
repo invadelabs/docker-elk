@@ -13,5 +13,6 @@ xpack.security.enabled: true
 xpack.monitoring.collection.enabled: true
 
 # discovery.type: single-node
+
 # path.repo: ["/mount/backups", "/mount/longterm_backups"]
 path.repo: ["/backup"]
