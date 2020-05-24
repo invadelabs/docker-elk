@@ -68,7 +68,7 @@ services:
       - elasticsearch
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: none
       options:
         max-size: "10m"
 
