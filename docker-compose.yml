@@ -7,24 +7,29 @@ services:
       args:
         ELK_VERSION: $ELK_VERSION
     volumes:
-      - type: bind
-        source: ./elasticsearch/config/elasticsearch.yml
-        target: /usr/share/elasticsearch/config/elasticsearch.yml
-        read_only: true
-      - type: volume
-        source: elasticsearch
-        target: /usr/share/elasticsearch/data
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ../data:/usr/share/elasticsearch/data
+      - /mnt/share/bkup/docker-elk:/backup
     ports:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      ES_JAVA_OPTS: "-Xmx4096m -Xms4096m"
       ELASTIC_PASSWORD: changeme
       # Use single node discovery in order to disable production mode and avoid bootstrap checks
       # see https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
     networks:
       - elk
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+    ulimits:
+      nofile:
+        soft: "65536"
+        hard: "65536"
 
   logstash:
     build:
@@ -44,12 +49,18 @@ services:
       - "5000:5000/tcp"
       - "5000:5000/udp"
       - "9600:9600"
+      - "10514:10514"
     environment:
-      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+      LS_JAVA_OPTS: "-Xmx2048m -Xms2048m"
     networks:
       - elk
     depends_on:
       - elasticsearch
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
 
   kibana:
     build:
@@ -67,6 +78,11 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    restart: unless-stopped
+    logging:
+      driver: none
+      options:
+        max-size: "10m"
 
 networks:
   elk:
