@@ -11,5 +11,4 @@ xpack.monitoring.enabled: true
 xpack.monitoring.elasticsearch.username: elastic
 xpack.monitoring.elasticsearch.password: changeme
 
-path.config: /usr/share/logstash/pipeline
 #config.reload.automatic: true

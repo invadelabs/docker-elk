@@ -9,13 +9,13 @@ services:
         ELK_VERSION: $ELK_VERSION
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-      - ./data:/usr/share/elasticsearch/data
+      - ../data:/usr/share/elasticsearch/data
       - /mnt/share/bkup/docker-elk:/backup
     ports:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: "-Xmx2048m -Xms2048m"
+      ES_JAVA_OPTS: "-Xmx4096m -Xms4096m"
       ELASTIC_PASSWORD: changeme
     networks:
       - elk
@@ -68,7 +68,7 @@ services:
       - elasticsearch
     restart: unless-stopped
     logging:
-      driver: json-file
+      driver: none
       options:
         max-size: "10m"
 
