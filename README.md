@@ -1,7 +1,7 @@
 # Elastic stack (ELK) on Docker
 
 [![Join the chat at https://gitter.im/deviantony/docker-elk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/deviantony/docker-elk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Elastic Stack version](https://img.shields.io/badge/ELK-7.2.1-blue.svg?style=flat)](https://github.com/deviantony/docker-elk/issues/421)
+[![Elastic Stack version](https://img.shields.io/badge/ELK-7.4.1-blue.svg?style=flat)](https://github.com/deviantony/docker-elk/issues/441)
 [![Build Status](https://api.travis-ci.org/deviantony/docker-elk.svg?branch=master)](https://travis-ci.org/deviantony/docker-elk)
 
 Run the latest version of the [Elastic stack][elk-stack] with Docker and Docker Compose.
@@ -33,6 +33,7 @@ Other available stack variants:
      * [macOS](#macos)
 2. [Usage](#usage)
    * [Bringing up the stack](#bringing-up-the-stack)
+   * [Cleanup](#cleanup)
    * [Initial setup](#initial-setup)
      * [Setting up user authentication](#setting-up-user-authentication)
      * [Injecting data](#injecting-data)
@@ -43,15 +44,13 @@ Other available stack variants:
    * [How to configure Logstash](#how-to-configure-logstash)
    * [How to disable paid features](#how-to-disable-paid-features)
    * [How to scale out the Elasticsearch cluster](#how-to-scale-out-the-elasticsearch-cluster)
-4. [Storage](#storage)
-   * [How to persist Elasticsearch data](#how-to-persist-elasticsearch-data)
-5. [Extensibility](#extensibility)
+4. [Extensibility](#extensibility)
    * [How to add plugins](#how-to-add-plugins)
    * [How to enable the provided extensions](#how-to-enable-the-provided-extensions)
-6. [JVM tuning](#jvm-tuning)
+5. [JVM tuning](#jvm-tuning)
    * [How to specify the amount of memory used by a service](#how-to-specify-the-amount-of-memory-used-by-a-service)
    * [How to enable a remote JMX connection to a service](#how-to-enable-a-remote-jmx-connection-to-a-service)
-7. [Going further](#going-further)
+6. [Going further](#going-further)
    * [Using a newer stack version](#using-a-newer-stack-version)
    * [Plugins and integrations](#plugins-and-integrations)
    * [Swarm mode](#swarm-mode)
@@ -60,8 +59,8 @@ Other available stack variants:
 
 ### Host setup
 
-* [Docker](https://www.docker.com/community-edition#/download) version **17.05+**
-* [Docker Compose](https://docs.docker.com/compose/install/) version **1.6.0+**
+* [Docker Engine](https://docs.docker.com/install/) version **17.05+**
+* [Docker Compose](https://docs.docker.com/compose/install/) version **1.12.0+**
 * 1.5 GB of RAM
 
 By default, the stack exposes the following ports:
@@ -111,6 +110,16 @@ You can also run all services in the background (detached mode) by adding the `-
 > :information_source: You must run `docker-compose build` first whenever you switch branch or update a base image.
 
 If you are starting the stack for the very first time, please read the section below attentively.
+
+### Cleanup
+
+Elasticsearch data is persisted inside a volume by default.
+
+In order to entirely shutdown the stack and remove all persisted data, use the following Docker Compose command:
+
+```console
+$ docker-compose down -v
+```
 
 ## Initial setup
 
@@ -183,7 +192,7 @@ Create an index pattern via the Kibana API:
 ```console
 $ curl -XPOST -D- 'http://localhost:5601/api/saved_objects/index-pattern' \
     -H 'Content-Type: application/json' \
-    -H 'kbn-version: 7.2.1' \
+    -H 'kbn-version: 7.4.1' \
     -u elastic:<your generated elastic password> \
     -d '{"attributes":{"title":"logstash-*","timeFieldName":"@timestamp"}}'
 ```
@@ -239,28 +248,6 @@ settings][trial-license]).
 ### How to scale out the Elasticsearch cluster
 
 Follow the instructions from the Wiki: [Scaling out Elasticsearch](https://github.com/deviantony/docker-elk/wiki/Elasticsearch-cluster)
-
-## Storage
-
-### How to persist Elasticsearch data
-
-The data stored in Elasticsearch will be persisted after container reboot but not after container removal.
-
-In order to persist Elasticsearch data even after removing the Elasticsearch container, you'll have to mount a volume on
-your Docker host. Update the `elasticsearch` service declaration to:
-
-```yml
-elasticsearch:
-
-  volumes:
-    - /path/to/storage:/usr/share/elasticsearch/data
-```
-
-This will store Elasticsearch data inside `/path/to/storage`.
-
-> :information_source: (Linux users) Beware that the Elasticsearch process runs as the [unprivileged `elasticsearch`
-user][esuser] is used within the Elasticsearch image, therefore the mounted data directory must be writable by the uid
-`1000`.
 
 ## Extensibility
 
