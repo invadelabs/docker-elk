@@ -8,6 +8,7 @@ services:
         ELK_VERSION: $ELK_VERSION
     volumes:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./elasticsearch/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro
       - ../data:/usr/share/elasticsearch/data
       - /mnt/share/bkup/docker-elk:/backup
     ports:
@@ -49,6 +50,7 @@ services:
       - "5000:5000/tcp"
       - "5000:5000/udp"
       - "9600:9600"
+      - "12201:12201/udp"
       - "10514:10514"
     environment:
       LS_JAVA_OPTS: "-Xmx2048m -Xms2048m"
