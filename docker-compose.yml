@@ -10,7 +10,7 @@ services:
       - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ./elasticsearch/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro
       - /srv/data:/usr/share/elasticsearch/data
-      - /mnt/share/bkup/docker-elk:/backup
+      - /mnt/share/bkup/elasticsearch/docker-elk:/backup
       # - /mnt/share/bkup/backup_longterm:/backup_longterm
     ports:
       - "9200:9200"
